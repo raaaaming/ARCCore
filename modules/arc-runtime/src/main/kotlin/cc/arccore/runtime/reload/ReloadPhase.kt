@@ -1,0 +1,17 @@
+package cc.arccore.runtime.reload
+
+enum class ReloadPhase {
+    IDLE,
+    VALIDATING,
+    CAPTURING_STATE,
+    DISABLING_DEPENDENTS,
+    DISABLING_TARGET,
+    UNLOADING_TARGET,
+    LOADING_NEW_JAR,
+    ENABLING_TARGET,
+    ENABLING_DEPENDENTS,
+    RESTORING_STATE,
+    COMPLETED,
+    ROLLING_BACK,
+    FAILED
+}

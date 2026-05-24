@@ -1,0 +1,34 @@
+name: ARCCore
+version: ${version}
+main: cc.arccore.core.ArcCorePlugin
+api-version: '1.21'
+load: STARTUP
+authors:
+  - Raaaaming
+description: ARCCore Platform Framework for Paper
+website: https://github.com/Raaaaming/ARCCore
+commands:
+  arcadia:
+    aliases:
+      - arc
+    description: ARCCore administrative command
+    usage: /arcadia <reload|diagnostics|leaks> [args...]
+    permission: arccore.admin
+    permission-message: §cYou don't have permission to use this command.
+permissions:
+  arccore.admin:
+    description: Access to ARCCore administrative commands
+    default: op
+    children:
+      arccore.admin.reload: true
+      arccore.admin.diagnostics: true
+      arccore.admin.leaks: true
+  arccore.admin.reload:
+    description: Allows hot reloading of ARCCore modules
+    default: op
+  arccore.admin.diagnostics:
+    description: Allows viewing ARCCore runtime diagnostics
+    default: op
+  arccore.admin.leaks:
+    description: Allows viewing ARCCore leak detection and runtime integrity reports
+    default: op

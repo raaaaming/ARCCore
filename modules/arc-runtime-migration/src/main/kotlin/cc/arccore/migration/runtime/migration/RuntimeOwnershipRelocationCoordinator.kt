@@ -1,0 +1,3 @@
+package cc.arccore.migration.runtime.migration
+
+internal typealias RuntimeOwnershipRelocationCoordinator = cc.arccore.migration.runtime.ownership.RuntimeOwnershipRelocationCoordinator

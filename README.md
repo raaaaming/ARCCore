@@ -793,7 +793,7 @@ class MyService(private val dep: OtherService)
 
 ---
 
-#### 경로 2 — `bindModuleInstance()` 수동 등록
+#### 경로 2 — `bindModuleInstance()` 수동 등록(비권장)
 
 모듈 스코프로 인스턴스를 직접 바인딩합니다.
 
@@ -803,7 +803,7 @@ container.bindModuleInstance("my-module", DatabaseService::class, DatabaseServic
 
 ---
 
-#### 경로 3 — `bindModule()` 수동 등록
+#### 경로 3 — `bindModule()` 수동 등록(비권장)
 
 모듈 스코프로 프로바이더를 바인딩합니다. 처음 resolve 시 한 번 생성하고 이후 캐싱됩니다.
 
@@ -816,7 +816,7 @@ container.bindModule("my-module", DatabaseService::class, object : InstanceProvi
 
 ---
 
-#### 경로 4 — `bindInstance()` 수동 등록
+#### 경로 4 — `bindInstance()` 수동 등록(비권장)
 
 전역 싱글톤 인스턴스를 직접 바인딩합니다.
 
@@ -826,7 +826,7 @@ container.bindInstance(DatabaseService::class, DatabaseService())
 
 ---
 
-#### 경로 5 — `bindSingleton()` 수동 등록
+#### 경로 5 — `bindSingleton()` 수동 등록(비권장)
 
 전역 싱글톤 프로바이더를 바인딩합니다. 처음 resolve 시 생성하고 이후 캐싱됩니다.
 
@@ -839,7 +839,7 @@ container.bindSingleton(DatabaseService::class, object : InstanceProvider<Databa
 
 ---
 
-#### 경로 6 — `ServiceRegistry` 등록
+#### 경로 6 — `ServiceRegistry` 등록(권장)
 
 `ServiceRegistry`에 등록된 타입도 DI 컨테이너에서 resolve됩니다.  
 `@ARCService` + `ServiceRegistry` 등록 조합이 대표적인 사례입니다.
@@ -875,7 +875,7 @@ class AlertManager @Inject constructor(
 
 ---
 
-#### 경로 7 — `ConstructorInjector` 리플렉션 폴백
+#### 경로 7 — `ConstructorInjector` 리플렉션 폴백(권장)
 
 1~6번 경로에서 찾지 못하면 리플렉션으로 시도합니다.  
 `@Inject` 생성자가 있거나 생성자가 정확히 1개면 동작합니다.
@@ -899,9 +899,9 @@ class BrokenService(val a: String) {
 
 ---
 
-### 수동 바인딩 — `Container`
+### 수동 바인딩 — `Container`(비권장)
 
-`@ArcComponent` 없이 인스턴스를 직접 등록하고 꺼내는 간단한 방법입니다.
+`@ArcComponent` 없이 인스턴스를 직접 등록하고 꺼내는 방법입니다.
 
 ```kotlin
 class MyModule : BaseModule() {
@@ -924,6 +924,9 @@ class MyModule : BaseModule() {
     }
 }
 ```
+
+`container`를 사용한 모듈 간의 의존성 주입은 일반적으로 권장하지 않습니다.
+`@ARCComponent`와 `@Inject`를 이용하세요.
 
 ---
 

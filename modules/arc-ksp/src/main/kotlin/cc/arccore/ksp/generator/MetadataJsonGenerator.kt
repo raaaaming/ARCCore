@@ -50,6 +50,26 @@ object MetadataJsonGenerator {
         version: String,
         mainClass: String,
         description: String,
+        authors: List<String> = emptyList(),
+        depends: List<String> = emptyList(),
+        dependPlugins: List<String> = emptyList(),
+        libraries: List<String> = emptyList(),
         apiVersion: String = "1.0"
-    ): String = """{"id":"$id","name":"$name","version":"$version","main":"$mainClass","description":"$description","apiVersion":"$apiVersion"}"""
+    ): String = buildString {
+        append("{")
+        append("\"id\":\"$id\"")
+        append(",\"name\":\"$name\"")
+        append(",\"version\":\"$version\"")
+        append(",\"main\":\"$mainClass\"")
+        append(",\"description\":\"$description\"")
+        if (authors.isNotEmpty()) append(",\"authors\":${jsonStringArray(authors)}")
+        if (depends.isNotEmpty()) append(",\"depends\":${jsonStringArray(depends)}")
+        if (dependPlugins.isNotEmpty()) append(",\"dependPlugins\":${jsonStringArray(dependPlugins)}")
+        if (libraries.isNotEmpty()) append(",\"libraries\":${jsonStringArray(libraries)}")
+        append(",\"apiVersion\":\"$apiVersion\"")
+        append("}")
+    }
+
+    private fun jsonStringArray(values: List<String>): String =
+        values.joinToString(prefix = "[", postfix = "]", separator = ",") { "\"$it\"" }
 }

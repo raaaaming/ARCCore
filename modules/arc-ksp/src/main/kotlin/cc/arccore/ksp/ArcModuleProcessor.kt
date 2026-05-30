@@ -48,18 +48,30 @@ class ArcModuleProcessor(
         }
         val args = annotation?.arguments ?: emptyList()
         fun arg(name: String) = args.find { it.name?.asString() == name }?.value as? String ?: ""
+        fun arrayArg(name: String): List<String> {
+            val value = args.find { it.name?.asString() == name }?.value
+            return (value as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
+        }
 
         val id = arg("id")
         val name = arg("name").ifBlank { id }
         val version = arg("version").ifBlank { "1.0.0" }
         val description = arg("description")
+        val authors = arrayArg("authors")
+        val dependencies = arrayArg("dependencies")
+        val dependPlugins = arrayArg("dependPlugins")
+        val libraries = arrayArg("libraries")
 
         val manifestJson = MetadataJsonGenerator.generateModuleManifest(
             id = id,
             name = name,
             version = version,
             mainClass = qualifiedName,
-            description = description
+            description = description,
+            authors = authors,
+            depends = dependencies,
+            dependPlugins = dependPlugins,
+            libraries = libraries
         )
 
         ResourceFileWriter.write(

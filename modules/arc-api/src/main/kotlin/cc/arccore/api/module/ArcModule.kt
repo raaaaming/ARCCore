@@ -9,5 +9,7 @@ annotation class ModuleSpec(
     val description: String = "",
     val authors: Array<String> = [],
     val dependencies: Array<String> = [],
+    val dependPlugins: Array<String> = [],
+    val libraries: Array<String> = [],
     val providesServices: Array<String> = []
 )

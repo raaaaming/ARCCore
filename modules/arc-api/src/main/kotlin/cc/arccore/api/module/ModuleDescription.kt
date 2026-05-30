@@ -12,6 +12,7 @@ data class ModuleDescription(
     val dependencies: List<ModuleDependency>,
     val softDependencies: List<ModuleDependency>,
     val loadBefore: List<String>,
+    val dependPlugins: List<String>,
     val mainClass: String,
     val apiVersion: String,
     val website: String
@@ -26,6 +27,7 @@ data class ModuleDescription(
             dependencies = emptyList(),
             softDependencies = emptyList(),
             loadBefore = emptyList(),
+            dependPlugins = emptyList(),
             mainClass = "",
             apiVersion = "1.0",
             website = ""

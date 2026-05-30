@@ -62,13 +62,19 @@ class ModuleRuntime(
         }
 
         val registry: ModuleRegistry = DefaultModuleRegistry()
+        val pluginClassLoaderResolver: (String) -> ClassLoader? = if (plugin != null) {
+            { name -> plugin.server.pluginManager.getPlugin(name)?.javaClass?.classLoader }
+        } else {
+            { null }
+        }
         val loader = DefaultModuleLoader(
             arcAPI = arcAPI,
             metadataReader = metadataReader,
             parentClassLoader = parentClassLoader,
             modulesDataFolder = modulesDataFolder,
             registry = registry,
-            contextFactory = contextFactory
+            contextFactory = contextFactory,
+            pluginClassLoaderResolver = pluginClassLoaderResolver
         )
 
         this.moduleLoader = loader

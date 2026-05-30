@@ -176,6 +176,7 @@ object MetadataValidator {
             dependencies = dependencies,
             softDependencies = softDependencies,
             loadBefore = loadBefore,
+            dependPlugins = manifest.dependPlugins,
             mainClass = manifest.main,
             apiVersion = manifest.apiVersion.ifBlank { "1.0" },
             website = manifest.website

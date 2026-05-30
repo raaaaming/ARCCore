@@ -24,7 +24,8 @@ class ModuleClassLoader
     private val strategy: ClassLoaderStrategy = ClassLoaderStrategy.HYBRID,
     private val sharedFilter: SharedClassFilter = SharedClassFilter.default(),
     private val visibility: ModuleClassVisibility = ModuleClassVisibility.noneExported(moduleId),
-    private val dependencyClassLoaders: List<ModuleClassLoader> = emptyList()
+    private val dependencyClassLoaders: List<ModuleClassLoader> = emptyList(),
+    private val pluginClassLoaders: List<ClassLoader> = emptyList()
 ) : URLClassLoader("arc-module:$moduleId", urls, parent) {
 
     companion object {
@@ -43,6 +44,8 @@ class ModuleClassLoader
     private val closed = AtomicBoolean(false)
 
     private val depLoaders: List<ModuleClassLoader> = dependencyClassLoaders.toList()
+
+    private val pluginLoaders: List<ClassLoader> = pluginClassLoaders.toList()
 
     private val delegationPolicy: DelegationPolicy = when (strategy) {
         ClassLoaderStrategy.PARENT_FIRST -> DelegationPolicy.parentFirst()
@@ -106,6 +109,7 @@ class ModuleClassLoader
             selfLoader = this,
             parentLoader = parent,
             dependencyLoaders = depLoaders,
+            pluginClassLoaders = pluginLoaders,
             findClassFromSelf = { findClass(it) },
             findClassFromParent = { parent.loadClass(it) }
         )
@@ -136,6 +140,8 @@ class ModuleClassLoader
             val depVisibility = definingLoader.visibility
             return depVisibility.isExported(name)
         }
+
+        if (definingLoader in pluginLoaders) return true
 
         return false
     }

@@ -7,6 +7,7 @@ data class DelegationContext(
     val selfLoader: ModuleClassLoader,
     val parentLoader: ClassLoader,
     val dependencyLoaders: List<ModuleClassLoader>,
+    val pluginClassLoaders: List<ClassLoader>,
     val findClassFromSelf: (String) -> Class<*>,
     val findClassFromParent: (String) -> Class<*>
 )

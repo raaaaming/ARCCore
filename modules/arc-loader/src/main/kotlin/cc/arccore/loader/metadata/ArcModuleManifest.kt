@@ -34,6 +34,7 @@ data class ArcModuleManifest(
     val depends: List<String> = emptyList(),
     val softDepends: List<String> = emptyList(),
     val loadBefore: List<String> = emptyList(),
+    val dependPlugins: List<String> = emptyList(),
     val apiVersion: String = "1.0",
     val website: String = ""
 )

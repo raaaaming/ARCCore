@@ -21,7 +21,8 @@ class ModuleLoadPipeline(
     private val parentClassLoader: ClassLoader,
     private val modulesDataFolder: Path,
     private val registry: ModuleRegistry,
-    private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory()
+    private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory(),
+    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null }
 ) {
     private val log = Logger.getLogger(ModuleLoadPipeline::class.java.name)
     private val discovery = ModuleDiscovery()
@@ -93,13 +94,22 @@ class ModuleLoadPipeline(
             return null
         }
 
+        val pluginClassLoaders = description.dependPlugins.mapNotNull { pluginName ->
+            val loader = pluginClassLoaderResolver(pluginName)
+            if (loader == null) {
+                log.warning("Module '${description.id}' declares dependPlugins '$pluginName' but it is not loaded")
+            }
+            loader
+        }
+
         return try {
             ModuleClassLoader(
                 moduleId = description.id,
                 urls = urls,
                 parent = parentClassLoader,
                 strategy = ClassLoaderStrategy.HYBRID,
-                sharedFilter = SharedClassFilter.default()
+                sharedFilter = SharedClassFilter.default(),
+                pluginClassLoaders = pluginClassLoaders
             )
         } catch (e: Exception) {
             log.severe("Failed to create ClassLoader for module '${description.id}': ${e.message}")

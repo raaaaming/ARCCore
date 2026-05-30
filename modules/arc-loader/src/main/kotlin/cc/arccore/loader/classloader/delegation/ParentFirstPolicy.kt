@@ -1,7 +1,5 @@
 package cc.arccore.loader.classloader.delegation
 
-import cc.arccore.loader.ModuleClassLoader
-
 class ParentFirstPolicy : DelegationPolicy {
 
     override fun resolveClass(context: DelegationContext): DelegationResult {
@@ -17,6 +15,14 @@ class ParentFirstPolicy : DelegationPolicy {
             try {
                 val depClass = dep.loadClass(name)
                 return DelegationResult.Found(depClass)
+            } catch (_: ClassNotFoundException) {
+            }
+        }
+
+        for (plugin in context.pluginClassLoaders) {
+            try {
+                val pluginClass = plugin.loadClass(name)
+                return DelegationResult.Found(pluginClass)
             } catch (_: ClassNotFoundException) {
             }
         }

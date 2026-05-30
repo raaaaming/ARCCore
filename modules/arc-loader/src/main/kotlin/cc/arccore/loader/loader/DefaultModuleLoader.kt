@@ -12,7 +12,8 @@ class DefaultModuleLoader(
     private val parentClassLoader: ClassLoader = DefaultModuleLoader::class.java.classLoader,
     private val modulesDataFolder: Path,
     private val registry: ModuleRegistry = DefaultModuleRegistry(),
-    private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory()
+    private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory(),
+    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null }
 ) : ModuleLoader {
 
     private val log = Logger.getLogger(DefaultModuleLoader::class.java.name)
@@ -22,7 +23,8 @@ class DefaultModuleLoader(
         parentClassLoader = parentClassLoader,
         modulesDataFolder = modulesDataFolder,
         registry = registry,
-        contextFactory = contextFactory
+        contextFactory = contextFactory,
+        pluginClassLoaderResolver = pluginClassLoaderResolver
     )
 
     override fun loadAll(modulesDirectory: Path): List<ModuleLoadResult> {

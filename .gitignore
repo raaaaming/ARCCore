@@ -1,4 +1,5 @@
 # 프로젝트 제외 경로
+/.kotlin/
 /.gradle/
 /build/
 /build-logic/.gradle/

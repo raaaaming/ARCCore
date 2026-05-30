@@ -18,6 +18,7 @@ class ArcModuleProcessor(
 
     companion object {
         private const val ARC_MODULE_ANNOTATION = "cc.arccore.api.module.ModuleSpec"
+        private const val PLUGIN_SUFFIX = "@plugin"
     }
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -58,9 +59,17 @@ class ArcModuleProcessor(
         val version = arg("version").ifBlank { "1.0.0" }
         val description = arg("description")
         val authors = arrayArg("authors")
-        val dependencies = arrayArg("dependencies")
-        val dependPlugins = arrayArg("dependPlugins")
         val libraries = arrayArg("libraries")
+
+        // `dependencies` mixes ARC modules and Bukkit plugins; plugins are marked
+        // with the `@plugin` suffix and routed to the manifest's dependPlugins field.
+        val (pluginEntries, moduleEntries) = arrayArg("dependencies")
+            .map { it.trim() }
+            .partition { it.endsWith(PLUGIN_SUFFIX, ignoreCase = true) }
+        val depends = moduleEntries.filter { it.isNotBlank() }
+        val dependPlugins = pluginEntries
+            .map { it.dropLast(PLUGIN_SUFFIX.length).trim() }
+            .filter { it.isNotBlank() }
 
         val manifestJson = MetadataJsonGenerator.generateModuleManifest(
             id = id,
@@ -69,7 +78,7 @@ class ArcModuleProcessor(
             mainClass = qualifiedName,
             description = description,
             authors = authors,
-            depends = dependencies,
+            depends = depends,
             dependPlugins = dependPlugins,
             libraries = libraries
         )

@@ -4,6 +4,7 @@ import cc.arccore.api.ArcAPI
 import cc.arccore.api.lifecycle.LifecycleObserver
 import cc.arccore.api.module.ModuleContainer
 import cc.arccore.api.module.ModuleState
+import cc.arccore.loader.library.LibraryResolver
 import cc.arccore.loader.loader.DefaultModuleLoader
 import cc.arccore.loader.loader.DefaultModuleRegistry
 import cc.arccore.loader.loader.ModuleContextFactory
@@ -67,6 +68,7 @@ class ModuleRuntime(
         } else {
             { null }
         }
+        val libraryResolver = LibraryResolver(modulesDirectory.parent.resolve("libraries"))
         val loader = DefaultModuleLoader(
             arcAPI = arcAPI,
             metadataReader = metadataReader,
@@ -74,7 +76,8 @@ class ModuleRuntime(
             modulesDataFolder = modulesDataFolder,
             registry = registry,
             contextFactory = contextFactory,
-            pluginClassLoaderResolver = pluginClassLoaderResolver
+            pluginClassLoaderResolver = pluginClassLoaderResolver,
+            libraryResolver = libraryResolver
         )
 
         this.moduleLoader = loader

@@ -2,6 +2,7 @@ package cc.arccore.loader.loader
 
 import cc.arccore.api.ArcAPI
 import cc.arccore.api.module.ModuleContainer
+import cc.arccore.loader.library.LibraryResolver
 import cc.arccore.loader.metadata.ModuleMetadataReader
 import java.nio.file.Path
 import java.util.logging.Logger
@@ -13,7 +14,8 @@ class DefaultModuleLoader(
     private val modulesDataFolder: Path,
     private val registry: ModuleRegistry = DefaultModuleRegistry(),
     private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory(),
-    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null }
+    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null },
+    private val libraryResolver: LibraryResolver? = null
 ) : ModuleLoader {
 
     private val log = Logger.getLogger(DefaultModuleLoader::class.java.name)
@@ -24,7 +26,8 @@ class DefaultModuleLoader(
         modulesDataFolder = modulesDataFolder,
         registry = registry,
         contextFactory = contextFactory,
-        pluginClassLoaderResolver = pluginClassLoaderResolver
+        pluginClassLoaderResolver = pluginClassLoaderResolver,
+        libraryResolver = libraryResolver
     )
 
     override fun loadAll(modulesDirectory: Path): List<ModuleLoadResult> {

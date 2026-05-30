@@ -7,6 +7,7 @@ import cc.arccore.api.module.ModuleDescription
 import cc.arccore.loader.ModuleClassLoader
 import cc.arccore.loader.classloader.ClassLoaderStrategy
 import cc.arccore.loader.classloader.SharedClassFilter
+import cc.arccore.loader.library.LibraryResolver
 import cc.arccore.loader.loader.exception.DuplicateModuleException
 import cc.arccore.loader.loader.exception.ModuleInstantiationException
 import cc.arccore.loader.metadata.ModuleMetadataReader
@@ -22,7 +23,8 @@ class ModuleLoadPipeline(
     private val modulesDataFolder: Path,
     private val registry: ModuleRegistry,
     private val contextFactory: ModuleContextFactory = SimpleModuleContextFactory(),
-    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null }
+    private val pluginClassLoaderResolver: (String) -> ClassLoader? = { null },
+    private val libraryResolver: LibraryResolver? = null
 ) {
     private val log = Logger.getLogger(ModuleLoadPipeline::class.java.name)
     private val discovery = ModuleDiscovery()
@@ -87,12 +89,23 @@ class ModuleLoadPipeline(
         jarPath: Path,
         fileName: String
     ): ModuleClassLoader? {
-        val urls = try {
-            arrayOf(jarPath.toUri().toURL())
+        val jarUrl = try {
+            jarPath.toUri().toURL()
         } catch (e: Exception) {
             log.severe("Invalid jar URL for $fileName: ${e.message}")
             return null
         }
+
+        val libraryUrls: List<URL> = if (description.libraries.isNotEmpty() && libraryResolver != null) {
+            libraryResolver.resolve(description.libraries)
+        } else {
+            if (description.libraries.isNotEmpty()) {
+                log.warning("Module '${description.id}' declares libraries but no LibraryResolver is configured")
+            }
+            emptyList()
+        }
+
+        val urls = (listOf(jarUrl) + libraryUrls).toTypedArray()
 
         val pluginClassLoaders = description.dependPlugins.mapNotNull { pluginName ->
             val loader = pluginClassLoaderResolver(pluginName)
